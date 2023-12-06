@@ -83,61 +83,6 @@ void *merge_sort(void *arg_)
 }
 
 
-/*
-void merge_sort(argument *arg_)
-{
-    argument *arg = (argument *)arg_;
-    int low = arg->start;
-    int high = arg->end;
-    if (low == high)
-    {
-        return;
-    }
-
-    int mid = (high + low) / 2;
-
-    if (high > low + 1)
-    {
-        argument **new_args = splitArg(arg, mid);
-        argument *arg1 = new_args[0];
-        argument *arg2 = new_args[1];
-        merge_sort(arg1);
-        merge_sort(arg2);
-    }
-
-    // Merging Code
-    int n1 = mid - low + 1;
-    int n2 = high - mid;
-    int arr1Copy[n1 + 1];
-    int arr2Copy[n2 + 2];
-    for (int i = 0; i < n1; i++)
-    {
-        arr1Copy[i] = arg->arr[low + i];
-    }
-    for (int i = 0; i < n2; i++)
-    {
-        arr2Copy[i] = arg->arr[mid + i + 1];
-    }
-    arr1Copy[n1] = INT_MAX;
-    arr2Copy[n2] = INT_MAX;
-    int k = low;
-    int i = 0;
-    int j = 0;
-
-    while (k <= high)
-    {
-        if (arr1Copy[i] <= arr2Copy[j])
-        {
-            arg->arr[k++] = arr1Copy[i++];
-        }
-        else
-        {
-            arg->arr[k++] = arr2Copy[j++];
-        }
-    }
-}
-*/
-
 argument *scanArr()
 {
     FILE *file = fopen("input.txt", "r");
