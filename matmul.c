@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+#include <sys/time.h>
+
 typedef struct
 
 {
@@ -162,59 +164,72 @@ void *mulRA(void *argmulra)
     return result;
 }
 
+arrInfo *scanArrays()
+{
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL)
+    {
+        printf("Error opening file.\n");
+        return NULL;
+    }
+
+    int R1, C1;
+    fscanf(file, "%d %d", &R1, &C1);
+    int *arr1 = (int *)malloc(sizeof(int) * R1 * C1);
+    for (int i = 0; i < R1; i++)
+    {
+        for (int j = 0; j < C1; j++)
+        {
+            fscanf(file, "%d", arr1 + i * C1 + j);
+        }
+    }
+
+    int R2, C2;
+    fscanf(file, "%d %d", &R2, &C2);
+    int *arr2 = (int *)malloc(sizeof(int) * R2 * C2);
+
+    for (int i = 0; i < R2; i++)
+    {
+        for (int j = 0; j < C2; j++)
+        {
+            fscanf(file, "%d", arr2 + i * C2 + j);
+        }
+    }
+
+    return initArrInfo(arr1, arr2, R1, C1, R2, C2);
+}
+
 int main()
 
 {
-
-    int R1 = 3;
-
-    int C1 = 2;
-
-    int R2 = 2;
-
-    int C2 = 4;
-
-    int arr1[3][2] = {{1, 2},
-
-                      {10, 4},
-
-                      {5, 6}};
-
-    int arr2[2][4] = {{1, 2, 3, 4},
-
-                      {5, 6, 7, 8}};
-
-    arrInfo *ainfo = initArrInfo((int *)arr1, (int *)arr2, R1, C1, R2, C2);
+    struct timeval start, end;
+    double elapsed_time;
+    arrInfo *ainfo = scanArrays();
+    int R1 = ainfo->arr1_rows;
+    int C1 = ainfo->arr1_cols;
+    int R2 = ainfo->arr2_rows;
+    int C2 = ainfo->arr2_cols;
 
     // Multiply Each Row and Column
-
+    gettimeofday(&start, NULL); 
     int *result_rc[R1][C2];
-
     pthread_t threads_rc[R1][C2];
-
     for (int i = 0; i < R1; i++)
-
     {
-
         for (int j = 0; j < C2; j++)
-
         {
-
             pthread_create(&threads_rc[i][j], NULL, mulRC, (void *)initArgMulRC(ainfo, i, j));
         }
     }
 
     for (int i = 0; i < R1; i++)
-
     {
-
         for (int j = 0; j < C2; j++)
-
         {
-
             pthread_join(threads_rc[i][j], (void *)&result_rc[i][j]);
         }
     }
+    gettimeofday(&end, NULL);
 
     for (int i = 0; i < R1; i++)
 
@@ -229,11 +244,11 @@ int main()
 
         printf("\n");
     }
-
-    printf("\n\n\n");
+    elapsed_time = (end.tv_sec - start.tv_sec) + ((end.tv_usec - start.tv_usec) / 1000000.0);
+    printf("END1 %f\n", elapsed_time);
 
     // Multiply Each Row with the Array
-
+    gettimeofday(&start, NULL); 
     int *result_ra[R1];
 
     pthread_t threads_ra[R1];
@@ -251,6 +266,7 @@ int main()
 
         pthread_join(threads_ra[i], (void *)&result_ra[i]);
     }
+    gettimeofday(&end, NULL);
 
     for (int i = 0; i < R1; i++)
 
@@ -267,6 +283,8 @@ int main()
 
         printf("\n");
     }
+    elapsed_time = (end.tv_sec - start.tv_sec) + ((end.tv_usec - start.tv_usec) / 1000000.0);
+    printf("END2 %f\n", elapsed_time);
 
     exit(0);
 }
