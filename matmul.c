@@ -250,6 +250,12 @@ int main()
 
     int C2 = ainfo->arr2_cols;
 
+    if (C1 != R2)
+    {
+        printf("Invalid Dimensions for Matrix Multiplication\n");
+        exit(1);
+    }
+
     // Multiply Each Row and Column
 
     gettimeofday(&start, NULL);
