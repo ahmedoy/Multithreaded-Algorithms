@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <sys/time.h>
-
+#include <string.h>
 typedef struct
 {
     int *arr;
@@ -28,7 +28,6 @@ argument **splitArg(argument *arg, int split_idx)
     return argArr;
 }
 
-
 void *merge_sort(void *arg_)
 {
     argument *arg = (argument *)arg_;
@@ -47,8 +46,8 @@ void *merge_sort(void *arg_)
         argument *arg1 = new_args[0];
         argument *arg2 = new_args[1];
         pthread_t thread1, thread2;
-        pthread_create(&thread1, NULL, merge_sort, (void*)arg1);
-        pthread_create(&thread2, NULL, merge_sort, (void*)arg2);
+        pthread_create(&thread1, NULL, merge_sort, (void *)arg1);
+        pthread_create(&thread2, NULL, merge_sort, (void *)arg2);
         pthread_join(thread1, NULL);
         pthread_join(thread2, NULL);
     }
@@ -58,11 +57,13 @@ void *merge_sort(void *arg_)
     int n2 = high - mid;
     int arr1Copy[n1 + 1];
     int arr2Copy[n2 + 2];
-    for(int i = 0; i<n1; i++){
-        arr1Copy[i] = arg->arr[low+i];
+    for (int i = 0; i < n1; i++)
+    {
+        arr1Copy[i] = arg->arr[low + i];
     }
-    for(int i = 0; i<n2; i++){
-        arr2Copy[i] = arg->arr[mid+i+1];
+    for (int i = 0; i < n2; i++)
+    {
+        arr2Copy[i] = arg->arr[mid + i + 1];
     }
     arr1Copy[n1] = INT_MAX;
     arr2Copy[n2] = INT_MAX;
@@ -70,22 +71,36 @@ void *merge_sort(void *arg_)
     int i = 0;
     int j = 0;
 
-    while(k<=high){
-        if(arr1Copy[i] <= arr2Copy[j]){
+    while (k <= high)
+    {
+        if (arr1Copy[i] <= arr2Copy[j])
+        {
             arg->arr[k++] = arr1Copy[i++];
         }
-        else{
+        else
+        {
             arg->arr[k++] = arr2Copy[j++];
         }
     }
     return NULL;
-
 }
-
 
 argument *scanArr()
 {
-    FILE *file = fopen("input.txt", "r");
+
+    char filename[100];
+
+    printf("Enter File name: ");
+
+    fgets(filename, sizeof(filename), stdin);
+
+    if (filename[strlen(filename) - 1] == '\n')
+    { // Replace newline with string terminatior
+
+        filename[strlen(filename) - 1] = '\0';
+    }
+
+    FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
         printf("Error opening file.\n");
@@ -112,8 +127,8 @@ int main()
 {
 
     argument *arg = scanArr();
-    merge_sort((void*) arg);
-
+    merge_sort((void *)arg);
+    printf("Sorted array: ");
     for (int i = 0; i <= arg->end; i++)
     {
         printf("%d ", arg->arr[i]);
