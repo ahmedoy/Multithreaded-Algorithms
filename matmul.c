@@ -118,6 +118,7 @@ void *mulRC(void *argmulrc)
     int C2 = arg->arr_info->arr2_cols;
 
     int *result = (int *)malloc(sizeof(int));
+    *result = 0;
 
     for (int k = 0; k < C1; k++)
 
@@ -177,6 +178,7 @@ arrInfo *scanArrays()
     fgets(filename, sizeof(filename), stdin);
 
     if (filename[strlen(filename) - 1] == '\n')
+
     { // Replace newline with string terminatior
 
         filename[strlen(filename) - 1] = '\0';
@@ -251,10 +253,59 @@ int main()
     int C2 = ainfo->arr2_cols;
 
     if (C1 != R2)
+
     {
+
         printf("Invalid Dimensions for Matrix Multiplication\n");
+
         exit(1);
     }
+
+    // Multiply Each Row with the Array
+
+    gettimeofday(&start, NULL);
+
+    int *result_ra[R1];
+
+    pthread_t threads_ra[R1];
+
+    for (int i = 0; i < R1; i++)
+
+    {
+
+        pthread_create(&threads_ra[i], NULL, mulRA, (void *)initArgMulRA(ainfo, i));
+    }
+
+    for (int i = 0; i < R1; i++)
+
+    {
+
+        pthread_join(threads_ra[i], (void **)&result_ra[i]);
+    }
+
+    gettimeofday(&end, NULL);
+
+    printf("By Row\n");
+
+    for (int i = 0; i < R1; i++)
+
+    {
+
+        int *row = result_ra[i];
+
+        for (int j = 0; j < C2; j++)
+
+        {
+
+            printf("%d ", row[j]);
+        }
+
+        printf("\n");
+    }
+
+    elapsed_time = (end.tv_sec - start.tv_sec) + ((end.tv_usec - start.tv_usec) / 1000000.0);
+
+    printf("Time : %f s\n\n", elapsed_time);
 
     // Multiply Each Row and Column
 
@@ -284,13 +335,14 @@ int main()
 
         {
 
-            pthread_join(threads_rc[i][j], (void *)&result_rc[i][j]);
+            pthread_join(threads_rc[i][j], (void **)&result_rc[i][j]);
         }
     }
 
     gettimeofday(&end, NULL);
 
     printf("By Element\n");
+
     for (int i = 0; i < R1; i++)
 
     {
@@ -300,51 +352,6 @@ int main()
         {
 
             printf("%d ", *result_rc[i][j]);
-        }
-
-        printf("\n");
-    }
-
-    elapsed_time = (end.tv_sec - start.tv_sec) + ((end.tv_usec - start.tv_usec) / 1000000.0);
-
-    printf("Time : %f s\n\n", elapsed_time);
-
-    // Multiply Each Row with the Array
-
-    gettimeofday(&start, NULL);
-
-    int *result_ra[R1];
-
-    pthread_t threads_ra[R1];
-
-    for (int i = 0; i < R1; i++)
-
-    {
-
-        pthread_create(&threads_ra[i], NULL, mulRA, (void *)initArgMulRA(ainfo, i));
-    }
-
-    for (int i = 0; i < R1; i++)
-
-    {
-
-        pthread_join(threads_ra[i], (void *)&result_ra[i]);
-    }
-
-    gettimeofday(&end, NULL);
-
-    printf("By Row\n");
-    for (int i = 0; i < R1; i++)
-
-    {
-
-        int *row = result_ra[i];
-
-        for (int j = 0; j < C2; j++)
-
-        {
-
-            printf("%d ", row[j]);
         }
 
         printf("\n");
