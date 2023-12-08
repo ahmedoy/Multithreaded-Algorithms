@@ -167,23 +167,9 @@ void *mulRA(void *argmulra)
     return result;
 }
 
-arrInfo *scanArrays()
+arrInfo *scanArrays(char *filename)
 
 {
-
-    char filename[100];
-
-    printf("Enter File name: ");
-
-    fgets(filename, sizeof(filename), stdin);
-
-    if (filename[strlen(filename) - 1] == '\n')
-
-    { // Replace newline with string terminatior
-
-        filename[strlen(filename) - 1] = '\0';
-    }
-
     FILE *file = fopen(filename, "r");
 
     if (file == NULL)
@@ -234,15 +220,26 @@ arrInfo *scanArrays()
     return initArrInfo(arr1, arr2, R1, C1, R2, C2);
 }
 
-int main()
+int main(int argc, char *argv[])
 
 {
+    if (argc < 2)
+    {
+        printf("Please provide input filename as a command line argument\n");
+        return -1;
+    }
+
+    if (argc > 2)
+    {
+        printf("Please provide a single argument for the input filename\n");
+        return -1;
+    }
 
     struct timeval start, end;
 
     double elapsed_time;
 
-    arrInfo *ainfo = scanArrays();
+    arrInfo *ainfo = scanArrays(argv[1]);
 
     int R1 = ainfo->arr1_rows;
 

@@ -84,7 +84,7 @@ void *merge_sort(void *arg_)
     return NULL;
 }
 
-argument *scanArr(char* filename)
+argument *scanArr(char *filename)
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -112,14 +112,19 @@ argument *scanArr(char* filename)
 int main(int argc, char *argv[])
 {
 
-    if (argc != 2)
+    if (argc < 2)
     {
         printf("Please provide input filename as a command line argument\n");
         return -1;
     }
 
-    char *filename = argv[1];
-    argument *arg = scanArr(filename);
+    if (argc > 2)
+    {
+        printf("Please provide a single argument for the input filename\n");
+        return -1;
+    }
+
+    argument *arg = scanArr(argv[1]);
     merge_sort((void *)arg);
     printf("Sorted array: ");
     for (int i = 0; i <= arg->end; i++)
