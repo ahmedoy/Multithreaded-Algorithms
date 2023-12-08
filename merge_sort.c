@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <sys/time.h>
-#include <string.h>
 typedef struct
 {
     int *arr;
@@ -85,21 +84,8 @@ void *merge_sort(void *arg_)
     return NULL;
 }
 
-argument *scanArr()
+argument *scanArr(char* filename)
 {
-
-    char filename[100];
-
-    printf("Enter File name: ");
-
-    fgets(filename, sizeof(filename), stdin);
-
-    if (filename[strlen(filename) - 1] == '\n')
-    { // Replace newline with string terminatior
-
-        filename[strlen(filename) - 1] = '\0';
-    }
-
     FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
@@ -123,10 +109,17 @@ argument *scanArr()
     return arg;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 
-    argument *arg = scanArr();
+    if (argc != 2)
+    {
+        printf("Please provide input filename as a command line argument\n");
+        return -1;
+    }
+
+    char *filename = argv[1];
+    argument *arg = scanArr(filename);
     merge_sort((void *)arg);
     printf("Sorted array: ");
     for (int i = 0; i <= arg->end; i++)
